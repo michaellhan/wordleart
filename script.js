@@ -112,11 +112,20 @@ class WordleArtGenerator {
     }
 
     selectPresetPattern(patternName) {
+        const selectedButton = document.querySelector(`[data-pattern="${patternName}"]`);
+        
+        if (selectedButton && selectedButton.classList.contains('active')) {
+            selectedButton.classList.remove('active');
+            this.selectedPreset = null;
+            this.targetPattern = null;
+            document.getElementById('target-preview').style.display = 'none';
+            return;
+        }
+        
         document.querySelectorAll('.preset-btn').forEach(btn => {
             btn.classList.remove('active');
         });
         
-        const selectedButton = document.querySelector(`[data-pattern="${patternName}"]`);
         if (selectedButton) {
             selectedButton.classList.add('active');
         }
