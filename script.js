@@ -582,6 +582,9 @@ class WordleArtGenerator {
 }
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+    
+    const targetWordInput = document.getElementById('target-word');
     new WordleArtGenerator();
 }); 

@@ -14,8 +14,8 @@ body {
 .container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 2rem;
-    min-height: 100vh;
+    padding: 2rem 2rem 0 2rem;
+    min-height: calc(100vh - 80px);
     display: flex;
     flex-direction: column;
 }
@@ -492,12 +492,59 @@ main {
     100% { transform: rotate(360deg); }
 }
 
-footer {
-    text-align: center;
-    margin-top: 2rem;
-    padding-top: 2rem;
+.site-footer {
+    background: white;
     border-top: 1px solid #e9ecef;
+    padding: 1.5rem 0;
+    margin-top: auto;
+    width: 100%;
+}
+
+.footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.footer-left p {
     color: #6c757d;
+    font-size: 0.95rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+.github-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.github-link:hover {
+    color: #1a1a1a;
+    background-color: #f8f9fa;
+    transform: translateY(-1px);
+}
+
+.github-icon {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s ease;
+}
+
+.github-link:hover .github-icon {
+    transform: scale(1.1);
 }
 
 @media (max-width: 600px) {
@@ -533,5 +580,16 @@ footer {
     
     .editor-controls {
         flex-direction: column;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        padding: 0 1rem;
+    }
+    
+    .footer-left,
+    .footer-right {
+        width: 100%;
     }
 } 
