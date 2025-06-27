@@ -1,127 +1,127 @@
 // Custom Pattern Editor for Wordle Art Generator
 class PatternEditor {
     constructor() {
-        this.currentColor = 'gray';
-        this.pattern = this.createEmptyPattern();
-        this.isDrawing = false;
-        this.editorElement = null;
-    }
-
-    createEmptyPattern() {
-        return Array(6).fill().map(() => Array(5).fill('gray'));
-    }
-
-    createEditor() {
-        const editor = document.createElement('div');
-        editor.className = 'pattern-editor';
-        editor.innerHTML = `
-            <div class="editor-header">
-                <h3>Custom Pattern Editor</h3>
-                <div class="color-picker">
-                    <button class="color-btn gray active" data-color="gray">Gray</button>
-                    <button class="color-btn yellow" data-color="yellow">Yellow</button>
-                    <button class="color-btn green" data-color="green">Green</button>
-                </div>
-            </div>
-            <div class="editor-grid" id="editor-grid"></div>
-            <div class="editor-controls">
-                <button class="btn btn-secondary" id="clear-pattern">Clear</button>
-                <button class="btn btn-primary" id="use-pattern">Use This Pattern</button>
-            </div>
-        `;
-
-        this.editorElement = editor;
-        this.setupEditorEvents();
-        this.renderGrid();
-        return editor;
-    }
-
-    setupEditorEvents() {
-        const colorBtns = this.editorElement.querySelectorAll('.color-btn');
-        const clearBtn = this.editorElement.querySelector('#clear-pattern');
-        const useBtn = this.editorElement.querySelector('#use-pattern');
-
-        colorBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                colorBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.currentColor = btn.dataset.color;
-            });
-        });
-
-        clearBtn.addEventListener('click', () => {
-            this.pattern = this.createEmptyPattern();
-            this.renderGrid();
-        });
-
-        useBtn.addEventListener('click', () => {
-            this.onPatternSelected(this.pattern);
-        });
-    }
-
-    renderGrid() {
-        const grid = this.editorElement.querySelector('#editor-grid');
-        grid.innerHTML = '';
-
-        for (let row = 0; row < 6; row++) {
-            const rowElement = document.createElement('div');
-            rowElement.className = 'editor-row';
-
-            for (let col = 0; col < 5; col++) {
-                const cell = document.createElement('div');
-                cell.className = `editor-cell ${this.pattern[row][col]}`;
-                cell.dataset.row = row;
-                cell.dataset.col = col;
-
-                cell.addEventListener('mousedown', (e) => {
-                    this.isDrawing = true;
-                    this.paintCell(row, col);
-                });
-
-                cell.addEventListener('mouseenter', (e) => {
-                    if (this.isDrawing) {
-                        this.paintCell(row, col);
-                    }
-                });
-
-                rowElement.appendChild(cell);
-            }
-
-            grid.appendChild(rowElement);
-        }
-    }
-
-    paintCell(row, col) {
-        this.pattern[row][col] = this.currentColor;
-        const cell = this.editorElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-        cell.className = `editor-cell ${this.currentColor}`;
-    }
-
-    onPatternSelected(pattern) {
-        // This will be set by the main script
-        if (this.patternSelectedCallback) {
-            this.patternSelectedCallback(pattern);
-        }
+        this.pattern = Array(6).fill().map(() => Array(5).fill('gray'));
+        this.selectedColor = 'green';
+        this.patternSelectedCallback = null;
     }
 
     setPatternSelectedCallback(callback) {
         this.patternSelectedCallback = callback;
     }
 
-    // Stop drawing when mouse leaves the grid
-    stopDrawing() {
-        this.isDrawing = false;
+    createEditor() {
+        const container = document.createElement('div');
+        container.className = 'pattern-editor';
+        
+        const colorPicker = this.createColorPicker();
+        const grid = this.createGrid();
+        const buttons = this.createButtons();
+        
+        container.appendChild(colorPicker);
+        container.appendChild(grid);
+        container.appendChild(buttons);
+        
+        return container;
+    }
+
+    createColorPicker() {
+        const picker = document.createElement('div');
+        picker.className = 'color-picker';
+        
+        const colors = ['gray', 'yellow', 'green'];
+        const labels = ['⬜ Gray', '🟡 Yellow', '🟢 Green'];
+        
+        colors.forEach((color, index) => {
+            const button = document.createElement('button');
+            button.className = `color-btn ${color}`;
+            button.textContent = labels[index];
+            button.dataset.color = color;
+            
+            if (color === this.selectedColor) {
+                button.classList.add('active');
+            }
+            
+            button.addEventListener('click', () => {
+                this.selectedColor = color;
+                document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+            
+            picker.appendChild(button);
+        });
+        
+        return picker;
+    }
+
+    createGrid() {
+        const grid = document.createElement('div');
+        grid.className = 'pattern-grid';
+        
+        for (let row = 0; row < 6; row++) {
+            for (let col = 0; col < 5; col++) {
+                const square = document.createElement('div');
+                square.className = 'pattern-square gray';
+                square.dataset.row = row;
+                square.dataset.col = col;
+                
+                square.addEventListener('click', () => {
+                    this.pattern[row][col] = this.selectedColor;
+                    this.updateGrid();
+                });
+                
+                square.addEventListener('mouseenter', () => {
+                    if (event.buttons === 1) {
+                        this.pattern[row][col] = this.selectedColor;
+                        this.updateGrid();
+                    }
+                });
+                
+                grid.appendChild(square);
+            }
+        }
+        
+        return grid;
+    }
+
+    createButtons() {
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'editor-buttons';
+        
+        const clearBtn = document.createElement('button');
+        clearBtn.textContent = 'Clear All';
+        clearBtn.addEventListener('click', () => {
+            this.pattern = Array(6).fill().map(() => Array(5).fill('gray'));
+            this.updateGrid();
+        });
+        
+        const usePatternBtn = document.createElement('button');
+        usePatternBtn.textContent = 'Use This Pattern';
+        usePatternBtn.className = 'primary-btn';
+        usePatternBtn.addEventListener('click', () => {
+            if (this.patternSelectedCallback) {
+                this.patternSelectedCallback([...this.pattern.map(row => [...row])]);
+            }
+        });
+        
+        buttonContainer.appendChild(clearBtn);
+        buttonContainer.appendChild(usePatternBtn);
+        
+        return buttonContainer;
+    }
+
+    updateGrid() {
+        const squares = document.querySelectorAll('.pattern-square');
+        squares.forEach(square => {
+            const row = parseInt(square.dataset.row);
+            const col = parseInt(square.dataset.col);
+            const color = this.pattern[row][col];
+            
+            square.className = `pattern-square ${color}`;
+        });
     }
 }
 
-// Add event listeners for mouse up outside the grid
-document.addEventListener('mouseup', () => {
-    if (window.patternEditor) {
-        window.patternEditor.stopDrawing();
-    }
-});
-
-// Export for use in main script
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = PatternEditor;
 } 

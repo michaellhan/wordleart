@@ -80,7 +80,6 @@ class WordleArtGenerator {
     }
 
     selectCustomPattern(pattern) {
-        // Clear preset selection
         document.querySelectorAll('.preset-btn').forEach(btn => {
             btn.classList.remove('active');
         });
@@ -89,7 +88,6 @@ class WordleArtGenerator {
         this.targetPattern = pattern;
         this.displayTargetPattern();
         
-        // Hide custom editor
         document.getElementById('custom-editor-container').style.display = 'none';
     }
 
@@ -114,12 +112,10 @@ class WordleArtGenerator {
     }
 
     selectPresetPattern(patternName) {
-        // Remove active class from all buttons
         document.querySelectorAll('.preset-btn').forEach(btn => {
             btn.classList.remove('active');
         });
         
-        // Add active class to selected button
         const selectedButton = document.querySelector(`[data-pattern="${patternName}"]`);
         if (selectedButton) {
             selectedButton.classList.add('active');
@@ -128,7 +124,6 @@ class WordleArtGenerator {
         this.selectedPreset = patternName;
         this.targetPattern = this.presetPatterns.getPattern(patternName);
         
-        // Show target pattern preview
         this.displayTargetPattern();
     }
 
@@ -170,7 +165,6 @@ class WordleArtGenerator {
 
         this.showLoading(true);
         
-        // Use setTimeout to allow UI to update
         setTimeout(() => {
             this.generateWordSequence();
             this.showLoading(false);
@@ -182,13 +176,10 @@ class WordleArtGenerator {
         this.generatedWords = [];
         this.artPattern = [];
 
-        // Initialize pattern generator for fallback
         this.patternGenerator = new PatternGenerator(this.targetWord);
         
-        // Generate words that will create the desired pattern
         this.generatedWords = this.findOptimalWordSequence(this.targetPattern);
         
-        // Generate the actual art pattern from the words
         this.artPattern = this.generateArtPattern(this.generatedWords);
     }
 
@@ -203,7 +194,6 @@ class WordleArtGenerator {
             impossiblePositions: Array(5).fill().map(() => new Set())
         };
         
-        // Use advanced algorithm for high accuracy
         return this.findHighAccuracySequence(targetPattern, gameState);
     }
 
@@ -211,18 +201,21 @@ class WordleArtGenerator {
         const words = [];
         const usedWords = new Set();
         
-        // Strategy: Find words that can achieve the target pattern with high precision
         for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
             const targetRow = targetPattern[rowIndex];
+            
+            if (rowIndex === 5) {
+                words.push(this.targetWord);
+                break;
+            }
+            
             const word = this.findOptimalWordForRow(targetRow, usedWords, gameState, rowIndex);
             words.push(word);
             usedWords.add(word);
             
-            // Update game state
             this.updateGameState(word, gameState);
             
-            // Always ensure realistic gameplay (no early wins)
-            if (rowIndex < 5) {
+            if (rowIndex < 4) {
                 this.ensureNoWin(word, gameState, words);
             }
         }
@@ -231,7 +224,6 @@ class WordleArtGenerator {
     }
 
     findOptimalWordForRow(targetRow, usedWords, gameState, rowIndex) {
-        // Advanced word selection with multiple strategies
         const strategies = [
             () => this.findExactMatchWord(targetRow, usedWords, gameState),
             () => this.findHighScoringWord(targetRow, usedWords, gameState),
@@ -246,12 +238,10 @@ class WordleArtGenerator {
             }
         }
         
-        // Ultimate fallback
         return this.wordList.find(word => !usedWords.has(word)) || this.wordList[0];
     }
 
     findExactMatchWord(targetRow, usedWords, gameState) {
-        // Try to find a word that would produce exactly the target pattern
         const targetColors = targetRow.join('');
         
         for (const word of this.wordList) {
@@ -273,7 +263,6 @@ class WordleArtGenerator {
         let bestWord = null;
         let bestScore = -1;
         
-        // Sample more words for better accuracy
         const sampleSize = Math.min(5000, this.wordList.length);
         const sampleWords = this.getRandomSample(this.wordList, sampleSize);
         
@@ -292,7 +281,6 @@ class WordleArtGenerator {
     }
 
     findCompatibleWord(targetRow, usedWords, gameState) {
-        // Find any compatible word that doesn't break the pattern
         for (const word of this.wordList) {
             if (usedWords.has(word)) continue;
             if (!this.isWordCompatible(word, gameState)) continue;
@@ -300,7 +288,7 @@ class WordleArtGenerator {
             const result = this.getWordleResult(word, this.targetWord);
             const compatibility = this.calculatePatternCompatibility(result, targetRow);
             
-            if (compatibility > 0.3) { // At least 30% compatible
+            if (compatibility > 0.3) {
                 return word;
             }
         }
@@ -309,7 +297,6 @@ class WordleArtGenerator {
     }
 
     findFallbackWord(usedWords, gameState) {
-        // Find any word that works with current game state
         for (const word of this.wordList) {
             if (usedWords.has(word)) continue;
             if (this.isWordCompatible(word, gameState)) {
@@ -324,18 +311,15 @@ class WordleArtGenerator {
         let score = 0;
         const result = this.getWordleResult(word, this.targetWord);
         
-        // Exact color matches
         for (let i = 0; i < 5; i++) {
             if (result[i] === targetRow[i]) {
-                score += 50; // High reward for exact matches
+                score += 50;
             }
         }
         
-        // Pattern similarity
         const patternMatch = this.calculatePatternMatch(result, targetRow);
         score += patternMatch * 100;
         
-        // Letter position optimization
         for (let i = 0; i < 5; i++) {
             const letter = word[i];
             const targetColor = targetRow[i];
@@ -357,7 +341,6 @@ class WordleArtGenerator {
             }
         }
         
-        // Always prevent early wins
         const greenCount = result.filter(color => color === 'green').length;
         if (greenCount >= 4) {
             score -= 100;
@@ -431,14 +414,12 @@ class WordleArtGenerator {
     isWordCompatible(word, gameState) {
         const letters = word.split('');
         
-        // Check known positions
         for (let i = 0; i < 5; i++) {
             if (gameState.knownPositions[i] && letters[i] !== gameState.knownPositions[i]) {
                 return false;
             }
         }
         
-        // Check impossible positions
         for (let i = 0; i < 5; i++) {
             if (gameState.impossiblePositions[i].has(letters[i])) {
                 return false;
@@ -479,15 +460,13 @@ class WordleArtGenerator {
         const answerLetters = answer.split('');
         const guessLetters = guess.split('');
         
-        // First pass: mark greens
         for (let i = 0; i < 5; i++) {
             if (guessLetters[i] === answerLetters[i]) {
                 result[i] = 'green';
-                answerLetters[i] = null; // Mark as used
+                answerLetters[i] = null;
             }
         }
         
-        // Second pass: mark yellows and grays
         for (let i = 0; i < 5; i++) {
             if (result[i] === 'green') continue;
             
@@ -496,7 +475,7 @@ class WordleArtGenerator {
             
             if (letterIndex !== -1) {
                 result[i] = 'yellow';
-                answerLetters[letterIndex] = null; // Mark as used
+                answerLetters[letterIndex] = null;
             } else {
                 result[i] = 'gray';
             }
@@ -513,7 +492,6 @@ class WordleArtGenerator {
         const wordCount = document.getElementById('word-count');
         const difficulty = document.getElementById('difficulty');
         
-        // Display word sequence
         wordSequence.innerHTML = '';
         this.generatedWords.forEach((word, index) => {
             const wordItem = document.createElement('div');
@@ -522,7 +500,6 @@ class WordleArtGenerator {
             wordSequence.appendChild(wordItem);
         });
         
-        // Display art preview
         artPreview.innerHTML = '';
         this.artPattern.forEach((row, rowIndex) => {
             const wordRow = document.createElement('div');
@@ -538,7 +515,6 @@ class WordleArtGenerator {
             artPreview.appendChild(wordRow);
         });
         
-        // Update stats
         const accuracyScore = this.calculateAccuracy();
         accuracy.textContent = `${accuracyScore}%`;
         wordCount.textContent = this.generatedWords.length;

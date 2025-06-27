@@ -8,12 +8,12 @@ class PresetPatterns {
 
     createTower() {
         return [
-            ['gray', 'gray', 'green', 'gray', 'gray'], // Row 1: Top
-            ['gray', 'green', 'green', 'green', 'gray'], // Row 2: Upper section
-            ['gray', 'green', 'green', 'green', 'gray'], // Row 3: Middle section
-            ['gray', 'green', 'green', 'green', 'gray'], // Row 4: Lower section
-            ['gray', 'green', 'green', 'green', 'gray'], // Row 5: Base section
-            ['green', 'green', 'green', 'green', 'green']  // Row 6: Foundation
+            ['gray', 'gray', 'green', 'gray', 'gray'],
+            ['gray', 'green', 'green', 'green', 'gray'],
+            ['gray', 'green', 'green', 'green', 'gray'],
+            ['gray', 'green', 'green', 'green', 'gray'],
+            ['gray', 'green', 'green', 'green', 'gray'],
+            ['green', 'green', 'green', 'green', 'green']
         ];
     }
 
