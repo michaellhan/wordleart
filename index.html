@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Art Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Wordle Art Generator</h1>
+            <p>Generate a sequence of 6 words to create your desired Wordle art pattern</p>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="target-word">Enter the Wordle answer:</label>
+                    <input 
+                        type="text" 
+                        id="target-word" 
+                        placeholder="Enter a 5-letter word"
+                        maxlength="5"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="pattern-selection">
+                    <label>Choose a preset pattern or create custom:</label>
+                    <div class="preset-buttons" id="preset-buttons">
+                        <!-- Preset buttons will be generated here -->
+                    </div>
+                    <button class="custom-pattern-btn" id="custom-pattern-btn">🎨 Create Custom Pattern</button>
+                </div>
+
+                <div class="custom-editor-container" id="custom-editor-container" style="display: none;">
+                    <!-- Custom pattern editor will be inserted here -->
+                </div>
+
+                <button id="generate-btn">Generate Art</button>
+            </div>
+
+            <div class="results-section" id="results" style="display: none;">
+                <h2>Generated Word Sequence</h2>
+                <div class="word-sequence" id="word-sequence"></div>
+                
+                <h3>Target Pattern</h3>
+                <div class="target-preview" id="target-preview"></div>
+                
+                <h3>Resulting Art Pattern</h3>
+                <div class="art-preview" id="art-preview"></div>
+                
+                <div class="stats">
+                    <p>Pattern accuracy: <span id="accuracy">0%</span></p>
+                    <p>Words used: <span id="word-count">0</span>/6</p>
+                    <p>Difficulty: <span id="difficulty">Easy</span></p>
+                </div>
+            </div>
+
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Generating your art sequence...</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>Use these words in order in Wordle to create your art pattern</p>
+        </footer>
+    </div>
+
+    <script src="pattern-generator.js"></script>
+    <script src="preset-patterns.js"></script>
+    <script src="pattern-editor.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
