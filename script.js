@@ -72,6 +72,8 @@ class WordleArtGenerator {
             container.style.display = 'none';
             container.innerHTML = '';
         } else {
+            // Clear any existing content first to prevent duplication
+            container.innerHTML = '';
             container.style.display = 'block';
             const editor = this.patternEditor.createEditor();
             container.appendChild(editor);
